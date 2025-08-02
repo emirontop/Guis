@@ -4,7 +4,7 @@ const guis = [
   {
     name: "Kavo UI",
     description: "Klasik ve stabil GUI kütüphanesi.",
-    video: "/videos/kavo.mp4", // public/videos/kavo.mp4
+    video: "/kavo.mp4", // public/videos/kavo.mp4
     code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Kavo-UI/Kavo-UI-Library/main/source.lua"))()`,
     repo: "https://github.com/Kavo-UI/Kavo-UI-Library",
     showcase: "FE uyumlu basit script GUI'si."
