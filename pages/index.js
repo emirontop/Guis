@@ -1,101 +1,85 @@
-import React from "react";
-import guis from "../guis";
+import React, { useState } from "react";
+
+const guis = [
+  {
+    name: "Kavo UI",
+    description: "Klasik ve stabil GUI kütüphanesi.",
+    video: "/videos/kavo.mp4", // public/videos/kavo.mp4
+    code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Kavo-UI/Kavo-UI-Library/main/source.lua"))()`,
+    repo: "https://github.com/Kavo-UI/Kavo-UI-Library",
+    showcase: "FE uyumlu basit script GUI'si."
+  },
+  {
+    name: "Starlight",
+    description: "Tema destekli gelişmiş GUI framework.",
+    video: "/videos/starlight.mp4",
+    code: `loadstring(game:HttpGet("https://nebula-softworks.github.io/starlight.js"))()`,
+    repo: "https://github.com/NebulaSoftworks/Starlight",
+    showcase: "Modern görünümlü, responsive GUI sistemi."
+  }
+];
 
 export default function Home() {
-  const handleCopy = (text) => {
-    navigator.clipboard.writeText(text);
-    alert("Kod panoya kopyalandı.");
-  };
+  const [selectedGUI, setSelectedGUI] = useState(null);
+
+  const handleBack = () => setSelectedGUI(null);
 
   return (
-    <>
-      <style>{`
-        body {
-          margin: 0;
-          font-family: Arial, sans-serif;
-          background-color: #121212;
-          color: white;
-        }
-        .container {
-          max-width: 1000px;
-          margin: 0 auto;
-          padding: 40px 20px;
-        }
-        .title {
-          font-size: 32px;
-          font-weight: bold;
-          text-align: center;
-          margin-bottom: 40px;
-        }
-        .card {
-          background-color: #1f1f1f;
-          padding: 20px;
-          border-radius: 10px;
-          margin-bottom: 30px;
-          border: 1px solid #333;
-        }
-        .card img {
-          width: 100%;
-          max-width: 400px;
-          border-radius: 8px;
-          margin-bottom: 15px;
-        }
-        .card h2 {
-          font-size: 24px;
-          margin: 10px 0;
-        }
-        .card p {
-          font-size: 14px;
-          color: #bbb;
-          margin-bottom: 15px;
-        }
-        .code {
-          background-color: #000;
-          padding: 10px;
-          border-radius: 5px;
-          color: #00ff88;
-          font-family: monospace;
-          font-size: 13px;
-          overflow-x: auto;
-        }
-        .buttons {
-          margin-top: 15px;
-          display: flex;
-          gap: 10px;
-          flex-wrap: wrap;
-        }
-        .btn {
-          padding: 8px 14px;
-          background-color: #2563eb;
-          color: white;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-          text-decoration: none;
-        }
-        .btn:hover {
-          background-color: #1e40af;
-        }
-      `}</style>
-
-      <div className="container">
-        <h1 className="title">GUI Library Tanıtım Sayfası</h1>
-
-        {guis.map((gui, index) => (
-          <div className="card" key={index}>
-            <img src={gui.image} alt={gui.name} />
-            <h2>{gui.name}</h2>
-            <p>{gui.description}</p>
-            <pre className="code">{gui.code}</pre>
-
-            <div className="buttons">
-              <button className="btn" onClick={() => handleCopy(gui.code)}>Kodu Kopyala</button>
-              <a className="btn" href={gui.repo} target="_blank" rel="noopener noreferrer">Repo'ya Git</a>
-              <a className="btn" href={`roblox://placeId=12345678&script=${encodeURIComponent(gui.code)}`}>Scripti Kullan</a>
-            </div>
+    <div style={{ padding: 24, fontFamily: "sans-serif", background: "#111", color: "white", minHeight: "100vh" }}>
+      {!selectedGUI ? (
+        <>
+          <h1 style={{ fontSize: 32, fontWeight: "bold", marginBottom: 16 }}>GUI Library Tanıtımları</h1>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+            {guis.map((gui, index) => (
+              <div
+                key={index}
+                onClick={() => setSelectedGUI(gui)}
+                style={{
+                  cursor: "pointer",
+                  background: "#1a1a1a",
+                  border: "1px solid #333",
+                  borderRadius: 8,
+                  padding: 12,
+                  width: 250
+                }}
+              >
+                <video src={gui.video} width="100%" height="140" style={{ borderRadius: 6 }} muted autoPlay loop />
+                <h2 style={{ fontSize: 20, margin: "8px 0" }}>{gui.name}</h2>
+                <p style={{ fontSize: 14, color: "#ccc" }}>{gui.description}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-    </>
+        </>
+      ) : (
+        <>
+          <button onClick={handleBack} style={{ background: "#333", color: "white", padding: "6px 12px", borderRadius: 4, marginBottom: 16 }}>
+            ◀ Geri Dön
+          </button>
+          <h2 style={{ fontSize: 28, fontWeight: "bold", marginBottom: 12 }}>{selectedGUI.name}</h2>
+          <video src={selectedGUI.video} controls width="100%" style={{ borderRadius: 6, marginBottom: 16 }} />
+          <p><strong>Açıklama:</strong> {selectedGUI.description}</p>
+          <p><strong>Showcase:</strong> {selectedGUI.showcase}</p>
+          <p><strong>Script:</strong></p>
+          <pre
+            style={{
+              background: "#000",
+              padding: 12,
+              borderRadius: 6,
+              color: "#0f0",
+              fontSize: 13,
+              overflowX: "auto"
+            }}
+          >
+            {selectedGUI.code}
+          </pre>
+          <p>
+            <strong>Repo:</strong>{" "}
+            <a href={selectedGUI.repo} target="_blank" rel="noopener noreferrer" style={{ color: "#4fa0ff" }}>
+              {selectedGUI.repo}
+            </a>
+          </p>
+        </>
+      )}
+    </div>
   );
 }
