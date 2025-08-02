@@ -1,85 +1,38 @@
-import React, { useState } from "react";
-
-const guis = [
-  {
-    name: "Kavo UI",
-    description: "Klasik ve stabil GUI kütüphanesi.",
-    video: "/kavo.mp4", // public/videos/kavo.mp4
-    code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Kavo-UI/Kavo-UI-Library/main/source.lua"))()`,
-    repo: "https://github.com/Kavo-UI/Kavo-UI-Library",
-    showcase: "FE uyumlu basit script GUI'si."
-  },
-  {
-    name: "Starlight",
-    description: "Tema destekli gelişmiş GUI framework.",
-    video: "/videos/starlight.mp4",
-    code: `loadstring(game:HttpGet("https://nebula-softworks.github.io/starlight.js"))()`,
-    repo: "https://github.com/NebulaSoftworks/Starlight",
-    showcase: "Modern görünümlü, responsive GUI sistemi."
-  }
-];
+import { useState } from "react";
 
 export default function Home() {
-  const [selectedGUI, setSelectedGUI] = useState(null);
+  const [videos, setVideos] = useState([]);
 
-  const handleBack = () => setSelectedGUI(null);
+  // Video dosyasını yükle ve hemen listeye ekle (URL.createObjectURL ile)
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    setVideos((v) => [...v, { url, name: file.name }]);
+  };
 
   return (
-    <div style={{ padding: 24, fontFamily: "sans-serif", background: "#111", color: "white", minHeight: "100vh" }}>
-      {!selectedGUI ? (
-        <>
-          <h1 style={{ fontSize: 32, fontWeight: "bold", marginBottom: 16 }}>GUI Library Tanıtımları</h1>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
-            {guis.map((gui, index) => (
-              <div
-                key={index}
-                onClick={() => setSelectedGUI(gui)}
-                style={{
-                  cursor: "pointer",
-                  background: "#1a1a1a",
-                  border: "1px solid #333",
-                  borderRadius: 8,
-                  padding: 12,
-                  width: 250
-                }}
-              >
-                <video src={gui.video} width="100%" height="140" style={{ borderRadius: 6 }} muted autoPlay loop />
-                <h2 style={{ fontSize: 20, margin: "8px 0" }}>{gui.name}</h2>
-                <p style={{ fontSize: 14, color: "#ccc" }}>{gui.description}</p>
-              </div>
-            ))}
+    <div style={{ background: "#111", color: "white", minHeight: "100vh", padding: 20, fontFamily: "sans-serif" }}>
+      <h1>Basit Video Yükleme</h1>
+
+      <input
+        type="file"
+        accept="video/*"
+        onChange={handleVideoChange}
+        style={{ marginBottom: 20, color: "white" }}
+      />
+
+      {videos.length === 0 && <p>Henüz video yüklenmedi.</p>}
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+        {videos.map((video, i) => (
+          <div key={i} style={{ background: "#222", padding: 12, borderRadius: 8 }}>
+            <p style={{ margin: "0 0 8px 0" }}>{video.name}</p>
+            <video controls src={video.url} style={{ width: "100%", maxWidth: 600, borderRadius: 8 }} />
           </div>
-        </>
-      ) : (
-        <>
-          <button onClick={handleBack} style={{ background: "#333", color: "white", padding: "6px 12px", borderRadius: 4, marginBottom: 16 }}>
-            ◀ Geri Dön
-          </button>
-          <h2 style={{ fontSize: 28, fontWeight: "bold", marginBottom: 12 }}>{selectedGUI.name}</h2>
-          <video src={selectedGUI.video} controls width="100%" style={{ borderRadius: 6, marginBottom: 16 }} />
-          <p><strong>Açıklama:</strong> {selectedGUI.description}</p>
-          <p><strong>Showcase:</strong> {selectedGUI.showcase}</p>
-          <p><strong>Script:</strong></p>
-          <pre
-            style={{
-              background: "#000",
-              padding: 12,
-              borderRadius: 6,
-              color: "#0f0",
-              fontSize: 13,
-              overflowX: "auto"
-            }}
-          >
-            {selectedGUI.code}
-          </pre>
-          <p>
-            <strong>Repo:</strong>{" "}
-            <a href={selectedGUI.repo} target="_blank" rel="noopener noreferrer" style={{ color: "#4fa0ff" }}>
-              {selectedGUI.repo}
-            </a>
-          </p>
-        </>
-      )}
+        ))}
+      </div>
     </div>
   );
 }
