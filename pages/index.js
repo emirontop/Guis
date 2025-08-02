@@ -8,28 +8,78 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-      <h1 className="text-3xl font-bold mb-6">GUI Library Tanıtım Sayfası</h1>
-      <div className="grid gap-4">
+    <>
+      <style>{`
+        body {
+          background-color: #121212;
+          color: white;
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 40px 20px;
+        }
+        .title {
+          font-size: 32px;
+          font-weight: bold;
+          margin-bottom: 30px;
+          text-align: center;
+        }
+        .card {
+          background-color: #1e1e1e;
+          border: 1px solid #333;
+          padding: 20px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+        }
+        .card h2 {
+          font-size: 20px;
+          margin-bottom: 8px;
+        }
+        .card p {
+          color: #bbb;
+          font-size: 14px;
+          margin-bottom: 10px;
+        }
+        .code {
+          background-color: black;
+          padding: 10px;
+          border-radius: 5px;
+          color: #00ff88;
+          font-family: monospace;
+          font-size: 13px;
+          overflow-x: auto;
+        }
+        .btn {
+          margin-top: 10px;
+          padding: 8px 14px;
+          background-color: #2563eb;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+        .btn:hover {
+          background-color: #1e40af;
+        }
+      `}</style>
+
+      <div className="container">
+        <h1 className="title">GUI Library Tanıtım Sayfası</h1>
         {guis.map((gui, index) => (
-          <div
-            key={index}
-            className="bg-gray-800 p-4 rounded-lg border border-gray-700"
-          >
-            <h2 className="text-xl font-semibold">{gui.name}</h2>
-            <p className="text-gray-400 mb-2">{gui.description}</p>
-            <pre className="bg-black p-2 rounded text-green-400 text-sm overflow-x-auto">
-              {gui.code}
-            </pre>
-            <button
-              onClick={() => handleCopy(gui.code)}
-              className="mt-2 px-3 py-1 bg-blue-600 rounded hover:bg-blue-700"
-            >
+          <div className="card" key={index}>
+            <h2>{gui.name}</h2>
+            <p>{gui.description}</p>
+            <pre className="code">{gui.code}</pre>
+            <button className="btn" onClick={() => handleCopy(gui.code)}>
               Kodu Kopyala
             </button>
           </div>
         ))}
       </div>
-    </div>
+    </>
   );
-              }
+                }
