@@ -1,94 +1,109 @@
-const express = require("express");
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
+import { useState, useEffect } from "react";
+import nextConnect from "next-connect";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 
-const app = express();
-const PORT = 3000;
+export const config = {
+  api: {
+    bodyParser: false
+  }
+};
 
-const videoDir = path.join(__dirname, "videos");
-if (!fs.existsSync(videoDir)) fs.mkdirSync(videoDir);
+// API handler (upload ve video listeleme)
+const apiHandler = nextConnect();
+
+const uploadDir = path.join(process.cwd(), "public/videos");
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, videoDir),
-  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname)
+  destination: uploadDir,
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname);
+  }
 });
 const upload = multer({ storage });
 
-app.use(express.static(videoDir));
+apiHandler.use(upload.single("video"));
 
-app.get("/", (req, res) => {
-  res.send(`<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8" />
-<title>Video Yükle ve İzle</title>
-<style>
-  body { background: #111; color: #eee; font-family: Arial, sans-serif; padding: 20px; }
-  input, button { padding: 8px; margin-top: 8px; width: 100%; box-sizing: border-box; border-radius: 5px; border: none; }
-  input[type="file"] { padding: 3px; }
-  button { background: #f90; color: black; font-weight: bold; cursor: pointer; }
-  .video-item { margin-top: 20px; border-radius: 8px; overflow: hidden; }
-  video { width: 100%; border-radius: 8px; }
-</style>
-</head>
-<body>
-  <h1>🎥 Video Yükle</h1>
-  <form id="uploadForm" enctype="multipart/form-data" method="POST" action="/upload">
-    <input type="file" name="video" accept="video/*" required />
-    <button type="submit">Yükle</button>
-  </form>
-  <h2>Kayıtlı Videolar</h2>
-  <div id="videos"></div>
+apiHandler.post(async (req, res) => {
+  res.status(200).json({ message: "Video yüklendi." });
+});
 
-  <script>
-    async function loadVideos() {
-      const res = await fetch("/list");
-      const videos = await res.json();
-      const container = document.getElementById("videos");
-      container.innerHTML = "";
-      videos.forEach(name => {
-        const div = document.createElement("div");
-        div.className = "video-item";
-        div.innerHTML = \`<video controls src="/\${name}"></video>\`;
-        container.appendChild(div);
-      });
-    }
+apiHandler.get((req, res) => {
+  const files = fs.readdirSync(uploadDir).filter(f => /\.(mp4|webm|ogg)$/i.test(f));
+  res.status(200).json(files);
+});
 
-    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const form = e.target;
-      const data = new FormData(form);
-      const res = await fetch("/upload", { method: "POST", body: data });
-      if(res.ok){
-        alert("Video yüklendi!");
-        form.reset();
-        loadVideos();
-      } else {
-        alert("Yükleme başarısız.");
-      }
+export default function Home({ videos }) {
+  const [file, setFile] = useState(null);
+  const [videoList, setVideoList] = useState(videos || []);
+  const [loading, setLoading] = useState(false);
+
+  async function fetchVideos() {
+    const res = await fetch("/api/videos");
+    const data = await res.json();
+    setVideoList(data);
+  }
+
+  async function uploadVideo(e) {
+    e.preventDefault();
+    if (!file) return alert("Video seçin.");
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("video", file);
+
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData
     });
 
-    loadVideos();
-  </script>
-</body>
-</html>`);
-});
+    if (res.ok) {
+      alert("Video yüklendi!");
+      setFile(null);
+      fetchVideos();
+    } else {
+      alert("Yükleme başarısız.");
+    }
+    setLoading(false);
+  }
 
-app.post("/upload", upload.single("video"), (req, res) => {
-  if (!req.file) return res.status(400).send("Video yüklenemedi.");
-  res.status(200).send("OK");
-});
+  return (
+    <main style={{ maxWidth: 600, margin: "20px auto", fontFamily: "Arial, sans-serif", background: "#111", color: "#eee", padding: 20, borderRadius: 8 }}>
+      <h1>🎥 Video Yükle</h1>
+      <form onSubmit={uploadVideo}>
+        <input type="file" accept="video/*" onChange={e => setFile(e.target.files[0])} required style={{ width: "100%", padding: 8, borderRadius: 5, marginBottom: 10, backgroundColor: "#222", color: "#eee", border: "none" }} />
+        <button type="submit" disabled={loading} style={{ width: "100%", padding: 10, borderRadius: 5, backgroundColor: "#f90", fontWeight: "bold", cursor: "pointer", border: "none" }}>
+          {loading ? "Yükleniyor..." : "Yükle"}
+        </button>
+      </form>
 
-app.get("/list", (req, res) => {
-  fs.readdir(videoDir, (err, files) => {
-    if (err) return res.status(500).json([]);
-    // Sadece video dosyaları (mp4, webm, ogg)
-    const vids = files.filter(f => /\.(mp4|webm|ogg)$/i.test(f));
-    res.json(vids);
-  });
-});
+      <h2 style={{ marginTop: 30 }}>🎬 Kayıtlı Videolar</h2>
+      {videoList.length === 0 && <p>Henüz video yok.</p>}
+      {videoList.map(v => (
+        <video key={v} controls style={{ width: "100%", marginTop: 10, borderRadius: 8 }}>
+          <source src={`/videos/${v}`} />
+          Tarayıcınız video formatını desteklemiyor.
+        </video>
+      ))}
+    </main>
+  );
+}
 
-app.listen(PORT, () => {
-  console.log(`Sunucu http://localhost:${PORT} adresinde çalışıyor.`);
-});
+// Next.js API routes - middleware
+export async function middleware(req, res) {
+  if (req.url.startsWith("/api/upload") || req.url.startsWith("/api/videos")) {
+    return apiHandler(req, res);
+  }
+}
+
+// Server side props ile video listesini getir (isteğe bağlı)
+export async function getServerSideProps() {
+  const uploadDir = path.join(process.cwd(), "public/videos");
+  let videos = [];
+  if (fs.existsSync(uploadDir)) {
+    videos = fs.readdirSync(uploadDir).filter(f => /\.(mp4|webm|ogg)$/i.test(f));
+  }
+  return { props: { videos } };
+}
