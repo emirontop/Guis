@@ -33,12 +33,18 @@ export default function GuiPage() {
       <p>{data.description}</p>
       <h3>Örnek Kod:</h3>
       <pre style={{
-        background: '#111',
-        color: '#0f0',
-        padding: '1rem',
-        borderRadius: '8px',
-        whiteSpace: 'pre-wrap'
-      }}>
+       background: '#111',
+       color: '#0f0',
+       padding: '1rem',
+       borderRadius: '8px',
+       whiteSpace: 'pre-wrap', // Satır sonlarında taşmasın
+       overflowX: 'auto',       // Yine de gerekirse yatay scroll eklesin
+       maxWidth: '100%',        // Sayfa dışına taşmasın
+       wordBreak: 'break-word', // Uzun satırları da bölsün
+       boxSizing: 'border-box'
+  }}>
+  {data.exampleCode}
+</pre>
         {data.exampleCode}
       </pre>
       <h3>Tanıtım Videosu:</h3>
