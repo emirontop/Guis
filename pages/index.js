@@ -1,40 +1,50 @@
+import Link from 'next/link';
+
+const guiList = [
+  {
+    id: 'kavo',
+    name: 'Kavo UI',
+    image: '/guis/kavo.png'
+  },
+  {
+    id: 'luna',
+    name: 'Luna UI',
+    image: '/guis/luna.png'
+  },
+  {
+    id: 'starlight',
+    name: 'Starlight UI',
+    image: '/guis/starlight.png'
+  }
+];
+
 export default function Home() {
-  const guis = [
-    {
-      name: "Rayfield UI",
-      desc: "Şık ve pikselli Rayfield GUI arayüzü",
-      code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/user/rayfield.lua"))()`
-    },
-    {
-      name: "Kavo UI",
-      desc: "Klasik sade GUI kütüphanesi",
-      code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/user/kavo.lua"))()`
-    }
-  ];
-
-  const copy = (text) => {
-    navigator.clipboard.writeText(text);
-    alert("Kod kopyalandı!");
-  };
-
   return (
-    <div style={{ background: "#111", color: "#eee", minHeight: "100vh", padding: "2rem", fontFamily: "sans-serif" }}>
-      <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>Emocii GUI Hub</h1>
-      {guis.map((gui, index) => (
-        <div key={index} style={{
-          background: "#1c1c1c", padding: "1rem", marginBottom: "1rem",
-          borderLeft: "4px solid #00c3ff", borderRadius: "6px"
-        }}>
-          <h2 style={{ margin: "0 0 0.5rem 0" }}>{gui.name}</h2>
-          <p style={{ margin: "0 0 0.5rem 0", color: "#aaa" }}>{gui.desc}</p>
-          <button
-            onClick={() => copy(gui.code)}
-            style={{ background: "#00c3ff", color: "white", border: "none", padding: "0.5rem 1rem", borderRadius: "4px" }}
-          >
-            Kodu Kopyala
-          </button>
-        </div>
-      ))}
+    <div style={{ fontFamily: 'sans-serif', padding: 20 }}>
+      <h1>📚 GUI Library Showcase</h1>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20 }}>
+        {guiList.map(gui => (
+          <div key={gui.id} style={{
+            border: '1px solid #ccc',
+            borderRadius: 10,
+            width: 200,
+            padding: 10
+          }}>
+            <img src={gui.image} alt={gui.name} style={{ width: '100%', borderRadius: 8 }} />
+            <h3>{gui.name}</h3>
+            <Link href={`/${gui.id}`}>
+              <button style={{
+                padding: '8px 12px',
+                background: '#0070f3',
+                color: 'white',
+                border: 'none',
+                borderRadius: 6,
+                cursor: 'pointer'
+              }}>Visit</button>
+            </Link>
+          </div>
+        ))}
+      </div>
     </div>
   );
-                                }
+                     }
