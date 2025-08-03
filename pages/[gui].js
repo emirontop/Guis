@@ -6,7 +6,7 @@ const guiData = {
     description: 'Kavo, sade ama güçlü bir script GUI sistemidir.',
     exampleCode: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Kavo-hub/Kavo/main/Init.lua"))()`,
     image: '/guis/kavo.png',
-    video: '/videos/kavo.mp4'
+    video: '/kavo.mp4'
   },
   luna: {
     name: 'Luna UI',
