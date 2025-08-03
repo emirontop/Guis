@@ -31,7 +31,6 @@ export default function GuiPage() {
     <div style={{ padding: '2rem' }}>
       <h1>{data.name}</h1>
       <p>{data.description}</p>
-      <img src={data.image} alt={data.name} style={{ maxWidth: '600px', borderRadius: 12 }} />
       <h3>Örnek Kod:</h3>
       <pre style={{
         background: '#111',
